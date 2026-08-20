@@ -1,0 +1,61 @@
+// Site-specific configuration for ERLANGEN.
+// Data goes out via the email-relay backend — see email-relay/DEPLOY.md.
+const CONFIG = {
+  siteId: "erlangen",
+  siteName: "Erlangen",
+
+  languages: ["en", "de", "sl"],
+  languageLabels: { en: "English", de: "Deutsch", sl: "Slovenščina" },
+
+  // Countries participants can flag as "I know people/places from here especially well".
+  // This is about familiarity, not identity — a participant can select none, one, or
+  // several. "population" must match a value in the population column of
+  // stimuli.xlsx. Leave this array empty for a site with no local pools at all
+  // (participants then only ever see the "global" pool).
+  regions: [
+    { code: "DE", population: "German", label: { en: "Germany", de: "Deutschland", sl: "Nemčija", tur: "Almanya", ukr: "Німеччина", rus: "Германия", zh: "德国" } },
+    { code: "SI", population: "Slovenian", label: { en: "Slovenia", de: "Slowenien", sl: "Slovenija", tur: "Slovenya", ukr: "Словенія", rus: "Словения", zh: "斯洛文尼亚" } },
+    { code: "CN", population: "Chinese", label: { en: "China", de: "China", sl: "Kitajska", tur: "Çin", ukr: "Китай", rus: "Китай", zh: "中国" } },
+    { code: "IN", population: "Indian", label: { en: "India", de: "Indien", sl: "Indija", tur: "Hindistan", ukr: "Індія", rus: "Индия", zh: "印度" } },
+    { code: "SCT", population: "Scottish", label: { en: "Scotland", de: "Schottland", sl: "Škotska", tur: "İskoçya", ukr: "Шотландія", rus: "Шотландия", zh: "苏格兰" } }
+  ],
+
+  // The session ends automatically once BOTH of these are reached (whichever comes
+  // later keeps it going) — or once the participant's pool runs out entirely.
+  minPeopleKnown: 30,
+  minPlacesKnown: 60,
+
+  // Whether this site emails data out at all. false means: no periodic checkpoints,
+  // no attempt at finish, and the "thank you" screen goes straight to a prominent
+  // download button instead — useful for a site where automatic sending genuinely
+  // isn't needed. Everything below this line (notifyEmails, emailjs, etc.) is only
+  // read when this is true.
+  emailEnabled: false,
+
+  // ↓↓↓ WHERE RESPONSES GET SENT — see email-relay/DEPLOY.md ↓↓↓
+
+  // Recipients who get EVERY checkpoint email (periodic + finish) — typically just you.
+  notifyEmails: ["2557636O@student.gla.ac.uk"],
+
+  // Recipients who only get the FINAL email (e.g. a supervising doctor who doesn't
+  // need the periodic in-progress copies) — leave empty for nobody in this category.
+  // Add an address here like: finalOnlyEmails: ["doctor@example.com"]
+  finalOnlyEmails: [],
+
+  emailjs: {
+    // From your EmailJS account (emailjs.com) — see email-relay/DEPLOY.md step 1.
+    serviceId: "service_4uk9pme",
+    templateId: "template_cfu2vxg",
+    publicKey: "EwhmkGZQxElwNgFu0",
+    // Where the raw checkpoint data lands first — your own Outlook inbox, watched by
+    // the Power Automate flow. Not the final recipients (see notifyEmails above).
+    ingressTo: "2557636O@student.gla.ac.uk"
+  },
+
+  // Safety-net cadence: also send a checkpoint after this many responses, not just at
+  // finish, so an abrupt tab close doesn't lose more than this many responses
+  // from reaching your inbox. Lower = safer but burns EmailJS's free 200/month quota
+  // faster (roughly trials-per-session ÷ this number, per participant). 25 is a
+  // reasonable starting point — see email-relay/DEPLOY.md for the quota math.
+  checkpointEveryNResponses: 50
+};

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Recognition Pretest</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-title" id="site-title-label">&nbsp;</span>
+    <label class="lang-switch">
+      <span class="visually-hidden" id="language-label">Language</span>
+      <select id="language-select" aria-label="Language"></select>
+    </label>
+  </div>
+  <div class="save-indicator" id="save-indicator" hidden></div>
+</header>
+
+<main id="app">
+
+  <!-- WELCOME -->
+  <section class="screen" id="screen-welcome" data-screen>
+    <div class="card card-static">
+      <h1 id="welcome-title"></h1>
+      <p id="welcome-body"></p>
+
+      <div id="welcome-actions" class="button-stack">
+        <button class="btn btn-primary" id="btn-start-new"></button>
+        <button class="btn btn-ghost" id="btn-resume-local" hidden></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATIENT ID (always shown for a fresh session, on every site - required, not
+       skippable; see the "Start" handler in app.js) -->
+  <section class="screen" id="screen-patient-id" data-screen hidden>
+    <div class="card card-static">
+      <h1 id="patient-id-title"></h1>
+      <p id="patient-id-body"></p>
+      <div class="input-prefix-group">
+        <span class="input-prefix">sub-</span>
+        <input type="text" class="text-input" id="patient-id-input" autocomplete="off">
+      </div>
+      <p class="field-error" id="patient-id-error" hidden></p>
+      <button class="btn btn-primary btn-block" id="btn-patient-id-continue"></button>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section class="screen" id="screen-setup" data-screen hidden>
+    <div class="card card-static">
+      <div class="field-group" id="regions-field">
+        <label id="regions-label"></label>
+        <p class="field-note" id="regions-note"></p>
+        <div class="tag-grid" id="regions-grid"></div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-setup-continue"></button>
+    </div>
+  </section>
+
+  <!-- INSTRUCTIONS -->
+  <section class="screen" id="screen-instructions" data-screen hidden>
+    <div class="card card-static">
+      <h1 id="instructions-title"></h1>
+      <p id="instructions-body" class="instructions-body"></p>
+
+      <div class="instructions-image-frame" id="instructions-image-frame">
+        <span id="instructions-image-placeholder"></span>
+        <!-- To add the real example image: place a file at images/instructions_example.png
+             and it will automatically replace this placeholder (see app.js). -->
+      </div>
+
+      <div class="controls-legend">
+        <h2 id="instructions-controls-title"></h2>
+        <p id="instructions-controls-touch"></p>
+        <p id="instructions-controls-keyboard"></p>
+        <p id="instructions-controls-buttons"></p>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-instructions-begin"></button>
+    </div>
+  </section>
+
+  <!-- TASK -->
+  <section class="screen" id="screen-task" data-screen hidden>
+    <div class="task-header">
+      <p class="task-reminder" id="task-reminder"></p>
+    </div>
+
+    <div class="stage">
+      <div class="stim-card" id="stim-card">
+        <div class="stim-image-wrap">
+          <img id="stim-image" alt="" draggable="false">
+        </div>
+        <div class="stim-name" id="stim-name"></div>
+        <div class="swipe-flag swipe-flag-know" id="flag-know"></div>
+        <div class="swipe-flag swipe-flag-unknown" id="flag-unknown"></div>
+      </div>
+    </div>
+
+    <div class="response-buttons">
+      <button class="btn btn-response btn-unknown" id="btn-dont-know">
+        <span class="btn-icon" aria-hidden="true">&#10005;</span>
+        <span id="btn-dont-know-label"></span>
+      </button>
+      <button class="btn btn-response btn-know" id="btn-know">
+        <span class="btn-icon" aria-hidden="true">&#10003;</span>
+        <span id="btn-know-label"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- FINISHING (brief initial attempt) -->
+  <section class="screen" id="screen-finishing" data-screen hidden>
+    <div class="card card-static">
+      <div class="spinner" aria-hidden="true"></div>
+      <h1 id="finishing-title"></h1>
+      <p id="finishing-body"></p>
+    </div>
+  </section>
+
+  <!-- WAITING FOR CONNECTION (genuinely offline, confirmed by the browser itself —
+       this is specifically the case worth waiting through, so it keeps retrying and
+       doesn't move on until either it succeeds or the situation turns out to be
+       something other than a plain connectivity gap) -->
+  <section class="screen" id="screen-waiting-connection" data-screen hidden>
+    <div class="card card-static">
+      <div class="spinner" aria-hidden="true"></div>
+      <h1 id="waiting-connection-title"></h1>
+      <p id="waiting-connection-body"></p>
+      <button class="btn btn-ghost btn-block btn-download-backup" id="btn-download-backup-waiting"></button>
+    </div>
+  </section>
+
+  <!-- REDO PROMPT (pool ran out before reaching the known-count targets) -->
+  <section class="screen" id="screen-redo-prompt" data-screen hidden>
+    <div class="card card-static">
+      <h1 id="redo-prompt-title"></h1>
+      <p id="redo-prompt-body"></p>
+      <button class="btn btn-primary btn-block" id="btn-redo-yes"></button>
+      <button class="btn btn-ghost btn-block" id="btn-redo-no"></button>
+    </div>
+  </section>
+
+  <!-- CONTINUE PROMPT (both known-count targets reached, pool still has more left) -->
+  <section class="screen" id="screen-continue-prompt" data-screen hidden>
+    <div class="card card-static">
+      <h1 id="continue-prompt-title"></h1>
+      <p id="continue-prompt-body"></p>
+      <button class="btn btn-primary btn-block" id="btn-continue-yes"></button>
+      <button class="btn btn-ghost btn-block" id="btn-continue-no"></button>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen" id="screen-done" data-screen hidden>
+    <div class="card card-static">
+      <h1 id="done-title"></h1>
+      <p id="done-body"></p>
+      <p class="done-stats" id="done-stats"></p>
+      <button class="btn btn-primary btn-download-backup" id="btn-download-backup-done"></button>
+      <button class="btn btn-ghost btn-block" id="btn-retry-send" hidden></button>
+    </div>
+  </section>
+
+</main>
+
+<script src="i18n.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
